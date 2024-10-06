@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import * as ts from 'typescript';
-import { TSFileEntity, TSFunctionNameToNodeMap } from './tsEntityInterface';
+import { TSFileEntity, TSFunctionNameToNodeMap, TSImportNameToNodeMap } from './tsEntityInterface';
 import { processNode } from './tsNodeFileEntityProcessor/processNode';
 
 const readFile = (filePath: string): string => {
@@ -13,15 +13,27 @@ const getFileName = (filePath: string): string => {
   return path.basename(filePath);
 }
 
-const generateFunctionNameToNodeMap = (node: ts.Node): TSFunctionNameToNodeMap => {
-  const fnNameToNodeMap: TSFunctionNameToNodeMap = {};
+const processAST = (node: ts.Node): {
+  fnNameToNodeMap: TSFunctionNameToNodeMap,
+  importNameToNodeMap: TSImportNameToNodeMap,
+} => {
 
+  const fnNameToNodeMap: TSFunctionNameToNodeMap = {};
+  const importNameToNodeMap: TSImportNameToNodeMap = {};
+
+  const hydratees = {
+    fnNameToNodeMap,
+    importNameToNodeMap,
+  };
   const traverseAST = (node: ts.Node) => {
-    processNode(node, fnNameToNodeMap);
+    processNode(node, hydratees);
     ts.forEachChild(node, (child) => traverseAST(child));
   }
   traverseAST(node);
-  return fnNameToNodeMap;
+  return {
+    fnNameToNodeMap,
+    importNameToNodeMap,
+  };
 }
 
 export const generateTSFileEntity = (filePath: string): TSFileEntity => {
@@ -34,9 +46,14 @@ export const generateTSFileEntity = (filePath: string): TSFileEntity => {
     true
   );
 
-  const fnNameToNodeMap = generateFunctionNameToNodeMap(ast);
+  const {
+    fnNameToNodeMap,
+    importNameToNodeMap,
+  } = processAST(ast);
+
   return {
     fileName: getFileName(filePath),
     fnNameToNodeMap,
+    importNameToNodeMap,
   };
 }

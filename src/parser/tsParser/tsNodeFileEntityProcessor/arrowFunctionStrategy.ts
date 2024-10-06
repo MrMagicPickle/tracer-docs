@@ -1,11 +1,10 @@
 import * as ts from 'typescript';
-import type { TSFunctionNameToNodeMap } from '../tsEntityInterface';
-import type { TsNodeFileEntityProcessorStrategy } from './processorStrategyInterface';
+import type { Hydratees, TsNodeFileEntityProcessorStrategy } from './processorStrategyInterface';
 
 export const arrowFunctionStrategy: TsNodeFileEntityProcessorStrategy = {
   canApply: (node: ts.Node) => ts.isArrowFunction(node),
 
-  apply: (node: ts.Node, fnNameToNodeMap: TSFunctionNameToNodeMap) => {
+  apply: (node: ts.Node, hydratees: Hydratees) => {
     // Get the parent node to extract identifier name
     const parent = node.parent;
 
@@ -18,6 +17,6 @@ export const arrowFunctionStrategy: TsNodeFileEntityProcessorStrategy = {
       functionName = node.getText();
     }
 
-    fnNameToNodeMap[functionName] = node;
+    hydratees.fnNameToNodeMap[functionName] = node;
   }
 }
