@@ -25,6 +25,7 @@ const processAST = (node: ts.Node): {
     fnNameToNodeMap,
     importNameToNodeMap,
   };
+
   const traverseAST = (node: ts.Node) => {
     processNode(node, hydratees);
     ts.forEachChild(node, (child) => traverseAST(child));
