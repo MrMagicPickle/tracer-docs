@@ -1,21 +1,21 @@
-import { TracerFunction } from "./domain/tracerFunctionInterface";
+import { TargetFileAndFunction } from "./domain/targetFileAndFunction";
 import tsParser from './parser/tsParser/tsParser';
 
-const init = (targetFunction: TracerFunction) => {
+const init = (targetFileAndFunction: TargetFileAndFunction) => {
   // const parsers = [
   //   tsParser,
   // ];
   // const parser = getParserStrategy(targetFunction, parsers);
   const parser = tsParser;
-  const nodeEntities = parser.getNodeEntities(targetFunction);
+  const diagramEntityRecords = parser.getDiagramEntityRecords(targetFunction);
 
-  console.log(nodeEntities, '<< nodeEntities');
+  console.log(diagramEntityRecords, '<< diagram entity records');
   // const applicationCoordinator = createApplicationCoordinator();
   // await applicationCoordinator.process(nodeEntities);
 }
 
 const targetFunction = {
-  filePath: '../test/mocks/mockFile.ts',
+  filePath: 'test/mocks/mockFileA.ts',
   functionName: 'mockFunction',
 }
 init(targetFunction);

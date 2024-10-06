@@ -1,25 +1,34 @@
-import { NodeEntity } from "../../domain/nodeEntityInterface";
-import { TracerFunction } from "../../domain/tracerFunctionInterface";
+import { TargetFileAndFunction } from "../../domain/targetFileAndFunction";
 
 import * as fs from 'fs';
 import * as ts from 'typescript';
+import * as path from 'path';
+import { Parser } from "../parserInterface";
+import { DiagramEntityRecord } from "../../domain/diagramEntityInterface";
+import { getDb } from "./diagramEntityDb";
+import { generateTSFileEntity } from "./generateTSFileEntity";
 
-const parser = {
-  canApply: (targetFunction: TracerFunction): boolean => {
+const parser: Parser = {
+  canApply: (targetFunction: TargetFileAndFunction): boolean => {
     return targetFunction.filePath.endsWith('.ts');
   },
 
-  getNodeEntities: (targetFunction: TracerFunction): NodeEntity[] => {
-    const nodeEntities: NodeEntity[] = [];
-
-    const ast = parseFileToAST(targetFunction.filePath);
-    traverseAST(nodeEntities, ast);
-    return nodeEntities;
+  getDiagramEntityRecords: (targetFunction: TargetFileAndFunction): DiagramEntityRecord[] => {
+    const db = getDb();
+    const fileEntity = generateTSFileEntity(targetFunction.filePath);
+    console.log(fileEntity, 'root << file entity');
+    /* TODO:
+     * - Use file entity to find target function node.
+     * - Begin second pass traversal to trace node.
+     * -   Second pass might need to recurse.
+    */
+    return db.records;
   },
 }
 
 const parseFileToAST = (filePath: string): ts.SourceFile => {
-  const content = fs.readFileSync(filePath, 'utf8');
+  const filePathResolved = path.resolve(__dirname, `../../../${filePath}`);
+  const content = fs.readFileSync(filePathResolved, 'utf8');
 
   return ts.createSourceFile(
       filePath,
@@ -28,31 +37,5 @@ const parseFileToAST = (filePath: string): ts.SourceFile => {
       true                    // Enable strict type checking
   );
 }
-
-const traverseAST = (nodeEntities: NodeEntity[], node: ts.Node, depth: number = 0): void => {
-  // Check for arrow functions
-  nodeEntities.push({
-    name: node.getFullText() ?? 'Hello',
-  });
-
-  if (ts.isArrowFunction(node)) {
-      const arrowFunctionText = node.getText();
-
-      // Get the parent node to extract identifier name
-      const parent = node.parent;
-
-      if (ts.isVariableDeclaration(parent) && parent.name) {
-          console.log(`${' '.repeat(depth)}Arrow function assigned to: ${parent.name.getText()}`);
-      } else if (ts.isPropertyAssignment(parent) && ts.isIdentifier(parent.name)) {
-          console.log(`${' '.repeat(depth)}Arrow function assigned to property: ${parent.name.getText()}`);
-      } else {
-          console.log(`${' '.repeat(depth)}Arrow function without identifier: ${arrowFunctionText}`);
-      }
-  }
-
-  // Continue traversing child nodes
-  ts.forEachChild(node, (childNode) => traverseAST(nodeEntities, childNode, depth + 2));
-}
-
 
 export default parser;

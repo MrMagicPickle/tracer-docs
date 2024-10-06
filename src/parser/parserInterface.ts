@@ -1,7 +1,7 @@
-import { NodeEntity } from "../domain/nodeEntityInterface";
-import { TracerFunction } from "../domain/tracerFunctionInterface";
+import { DiagramEntityRecord } from "../domain/diagramEntityInterface";
+import { TargetFileAndFunction } from "../domain/targetFileAndFunction";
 
 export type Parser = {
-  canApply: (targetFunction: TracerFunction) => boolean;
-  getNodeEntities: (targetFunction: TracerFunction) => NodeEntity[];
+  canApply: (targetFileAndFunction: TargetFileAndFunction) => boolean;
+  getDiagramEntityRecords: (targetFileAndFunction: TargetFileAndFunction) => DiagramEntityRecord[];
 }

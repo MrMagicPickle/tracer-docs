@@ -1,4 +1,4 @@
-export type TracerFunction = {
+export type TargetFileAndFunction = {
   filePath: string;
   functionName: string;
 }
