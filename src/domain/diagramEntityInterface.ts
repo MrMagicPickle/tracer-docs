@@ -1,5 +1,6 @@
 export type Actor = {
-  name: string;
+  filePath: string;
+  functionName: string;
 }
 
 export type Arrow =

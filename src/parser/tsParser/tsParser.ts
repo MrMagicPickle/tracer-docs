@@ -7,6 +7,7 @@ import { Parser } from "../parserInterface";
 import { DiagramEntityRecord } from "../../domain/diagramEntityInterface";
 import { getDb } from "./diagramEntityDb";
 import { generateTSFileEntity } from "./generateTSFileEntity";
+import { processTargetFileAndFunction } from "./processTargetFileAndFunction";
 
 const parser: Parser = {
   canApply: (targetFunction: TargetFileAndFunction): boolean => {
@@ -15,13 +16,7 @@ const parser: Parser = {
 
   getDiagramEntityRecords: (targetFunction: TargetFileAndFunction): DiagramEntityRecord[] => {
     const db = getDb();
-    const fileEntity = generateTSFileEntity(targetFunction.filePath);
-    console.log(fileEntity, 'root << file entity');
-    /* TODO:
-     * - Use file entity to find target function node.
-     * - Begin second pass traversal to trace node.
-     * -   Second pass might need to recurse.
-    */
+    processTargetFileAndFunction(targetFunction);
     return db.records;
   },
 }

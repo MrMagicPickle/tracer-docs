@@ -16,6 +16,6 @@ const init = (targetFileAndFunction: TargetFileAndFunction) => {
 
 const targetFunction = {
   filePath: 'test/mocks/mockFileA.ts',
-  functionName: 'mockFunction',
+  functionName: 'functionA',
 }
 init(targetFunction);

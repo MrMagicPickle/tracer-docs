@@ -1,4 +1,4 @@
-import { functionB } from "./mockFileB";
+import { functionB } from "./test/mocks/mockFileB";
 
 const functionA = (x: number, y: string) => {
   console.log('Hello there');

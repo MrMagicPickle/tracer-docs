@@ -5,7 +5,9 @@ import { TSFileEntity, TSFunctionNameToNodeMap, TSImportNameToNodeMap } from './
 import { processNode } from './tsNodeFileEntityProcessor/processNode';
 
 const readFile = (filePath: string): string => {
+
   const filePathResolved = path.resolve(__dirname, `../../../${filePath}`);
+  console.log(filePathResolved, '<< file path');
   return fs.readFileSync(filePathResolved, 'utf8');
 }
 
@@ -53,7 +55,7 @@ export const generateTSFileEntity = (filePath: string): TSFileEntity => {
   } = processAST(ast);
 
   return {
-    fileName: getFileName(filePath),
+    fileName: filePath,
     fnNameToNodeMap,
     importNameToNodeMap,
   };
